@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Module that starts a Flask web application"""
-from flask import Flask
+from flask import Flask, render_template
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 ip = '0.0.0.0'
@@ -36,6 +36,23 @@ def py_rout(text='is cool'):
 def num(n):
     """Retruns n is a number if is an int"""
     return "{} is a number".format(n)
+
+
+@app.route('/number_template/<int:n>')
+def num_template(n):
+    """Return an html for an int"""
+    return render_template('5-number.html', n=n)
+
+
+@app.route('/number_odd_or_even/<int:n>')
+def even_odd(n):
+    """Return an html if a number is odd or even"""
+    if n % 2 == 0:
+        return render_template('6-number_odd_or_even.html',
+                               n="Number: {} is even".format(n))
+    else:
+        return render_template('6-number_odd_or_even.html',
+                               n="Number: {} is odd".format(n))
 
 
 if __name__ == '__main__':
