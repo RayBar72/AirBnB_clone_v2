@@ -32,5 +32,11 @@ def py_rout(text='is cool'):
     return "Python {}".format(text.replace("_", " "))
 
 
+@app.route('/number/<int:n>')
+def num(n):
+    """Retruns n is a number if is an int"""
+    return "{} is a number".format(n)
+
+
 if __name__ == '__main__':
     app.run(host=ip, port=port)
