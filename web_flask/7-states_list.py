@@ -17,7 +17,6 @@ def tear_db(exception):
     storage.close()
 
 
-
 @app.route('/states_list')
 def states_list():
     """Displaying list of states"""
