@@ -11,12 +11,13 @@ class FileStorage:
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
         if cls is not None:
-            c_dict = {}
+            cls_objects = {}
             for k, v in FileStorage.__objects.items():
-                if v.__class__ == cls:
-                    c_dict[k] = v
-            return c_dict
-        return FileStorage.__objects
+                if k.startswith(cls.__name__):
+                    cls_objects.update({k: v})
+            return cls_objects
+        else:
+            return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -29,7 +30,15 @@ class FileStorage:
             temp.update(FileStorage.__objects)
             for key, val in temp.items():
                 temp[key] = val.to_dict()
-            json.dump(temp, f)
+            json.dump(temp, f, sort_keys=True, indent=4)
+
+    def delete(self, obj=None):
+        """Deletes the object obj if obj is in __objects"""
+        if obj is not None:
+            for k, v in FileStorage.__objects.items():
+                if v is obj:
+                    tmp = k
+            FileStorage.__objects.pop(tmp)
 
     def reload(self):
         """Loads storage dictionary from file"""
@@ -42,10 +51,10 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
+            'BaseModel': BaseModel, 'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+        }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
@@ -55,15 +64,7 @@ class FileStorage:
         except FileNotFoundError:
             pass
 
-    def delete(self, obj=None):
-        """Function that deletes"""
-        if obj is None:
-            return
-        else:
-            del FileStorage.__objects[obj.to_dict()['__class__'] + '.' +
-                                      obj.id]
-            self.save()
-
     def close(self):
-        """Calling reload to deserialize a JSON file"""
+        """Handles storage close"""
         self.reload()
+        
